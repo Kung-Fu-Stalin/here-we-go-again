@@ -1,0 +1,10 @@
+url: https://m.twitch.tv/
+browser: chrome
+device: pixel7
+devices: 
+  - pixel7:
+      height: 915
+      width: 412
+  - iphonese:
+      height: 664
+      width: 375
