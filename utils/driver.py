@@ -31,12 +31,3 @@ class Driver:
             driver = webdriver.Firefox(options=firefox_options)
             driver.set_window_size(Config.WIDTH, Config.HEIGHT)
         return driver
-    
-
-if __name__ == '__main__':
-    s1 = Driver()
-    s1.get(Config.URL)
-    time.sleep(10)
-
-    s1.quit()
-    
