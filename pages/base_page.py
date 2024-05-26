@@ -3,9 +3,11 @@ from typing import Union
 from pathlib import Path
 from datetime import datetime
 
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.remote.webelement import WebElement
 
 from utils import Driver
 from utils import get_logger
@@ -42,7 +44,7 @@ class BasePage:
         logger.info(f"Screenshot is available here: {screenshot_path}")
         return screenshot_path
     
-    def find_element(self, *location):
+    def find_element(self, location: Union[tuple, list]) -> Union[WebElement, None]:
         logger.info(f"Finding element with location: {location}")
         try:
             element = self.driver_wait.until(
@@ -54,21 +56,36 @@ class BasePage:
             return element
         except TimeoutException:
             logger.error(f"Element not found: {location}")
-            return None
+            return 
 
-    def click_element(self, *location) -> None:
+    def click_element(self, location: Union[tuple, list])-> Union[WebElement, None]:
         try:
-            element = self.find_element(*location)
+            element = self.driver_wait.until(
+                expected_conditions.visibility_of_element_located(
+                    location
+                )
+            )
             if element:
                 element.click()
+                return element
         except TimeoutException:
             logger.error(f"Could not click the element: {location}")
 
-    def enter_text(self, *location, text: str) -> None:
+    def enter_text(self, location: Union[tuple, list], text: str) -> Union[WebElement, None]:
         try:
-            element = self.find_element(*location)
+            element = self.driver_wait.until(
+                expected_conditions.visibility_of_element_located(
+                    location
+                )
+            )
             if element:
                 element.send_keys(text)
+                return element
         except TimeoutException:
             logger.error(f"Could not enter text in the element: {location}")
+
+    @staticmethod
+    def send_key_on_element(element: WebElement, key: Keys) -> None:
+        element.send_keys(key)
+
     
