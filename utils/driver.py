@@ -1,33 +1,32 @@
-import time 
-
 from selenium import webdriver
-
-from utils import Config
 
 
 class Driver:
+    
+    _instances = {}
 
-    _driver = None
-
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(Driver, cls).__new__(cls)
-            cls._driver = cls.get_driver(cls)
-        return cls._driver
-
-    def get_driver(self):
-        if Config.BROWSER == "chrome":
+    def __new__(cls, browser: str, width: int, height: int):
+        key = (browser, width, height)
+        if key not in cls._instances:   
+            instance = super(Driver, cls).__new__(cls)
+            instance._driver = cls.get_driver(browser, width, height)
+            cls._instances[key] = instance._driver
+        return cls._instances[key]
+    
+    @staticmethod
+    def get_driver(browser: str, width: int, height: int):
+        if browser == "chrome":
             mobile_params = {
                 "deviceMetrics": {
-                    "width": Config.WIDTH,
-                    "height": Config.HEIGHT
+                    "width": int(width),
+                    "height": int(height)
                 }
             }
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_experimental_option("mobileEmulation", mobile_params)
             driver = webdriver.Chrome(options=chrome_options)
-        elif Config.BROWSER == "firefox":
+        elif browser == "firefox":
             firefox_options = webdriver.FirefoxOptions()
             driver = webdriver.Firefox(options=firefox_options)
-            driver.set_window_size(Config.WIDTH, Config.HEIGHT)
+            driver.set_window_size(int(width), int(height))
         return driver

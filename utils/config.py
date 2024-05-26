@@ -8,6 +8,8 @@ class Config:
 
     PROJECT_PATH = Path(__file__).resolve().parent.parent
     CONFIG_PATH = Path(PROJECT_PATH, "config", "config.yml")
+    SCREENSHOTS_PATH = Path(PROJECT_PATH, "screenshots")
+    SCREENSHOTS_PATH.mkdir(parents=True, exist_ok=True)
 
     def __init__(self) -> None:
         self.data = self.read_data(self.CONFIG_PATH)

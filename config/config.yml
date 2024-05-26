@@ -1,6 +1,7 @@
-url: https://m.twitch.tv/
-browser: chrome
-device: pixel7
+url: "https://m.twitch.tv/"
+game: "starcraft 2"
+browser: "firefox"
+device: "pixel7"
 devices: 
   - pixel7:
       height: 915
