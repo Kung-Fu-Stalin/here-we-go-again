@@ -12,4 +12,7 @@ def test_wap():
     home_page.close_privacy_window()
     home_page.click_on_search_button()
     home_page.search(text=Config.GAME)
-    home_page.make_screenshot(path=Config.SCREENSHOTS_PATH)
+    home_page.switch_to_channels()
+    home_page.scroll_search_results(count=5)
+    home_page.select_random_channel()
+    home_page.make_screenshot(Config.SCREENSHOTS_PATH)
