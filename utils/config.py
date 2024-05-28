@@ -1,7 +1,15 @@
 from pathlib import Path
 from typing import Union
+from dataclasses import dataclass
 
 import yaml
+
+
+@dataclass
+class Device: 
+    name: str
+    height: int
+    width: int
 
 
 class Config:
@@ -26,9 +34,14 @@ class Config:
         test_device = self.data["device"]
         for device in self.data["devices"]:
             if device.get(test_device):
-                for key, value in device[test_device].items():
-                    setattr(self, key.upper(), value)
+                device = Device(
+                    name=test_device,
+                    height=device[test_device]["height"],
+                    width=device[test_device]["width"]
+                )
+                setattr(self, "DEVICE", device)
         self.data.pop("devices")
+        self.data.pop("device")
 
     def _set_config_attributes(self) -> None:
         for key, value in self.data.items():

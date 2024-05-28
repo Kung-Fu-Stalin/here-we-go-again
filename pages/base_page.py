@@ -11,6 +11,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 
 from utils import Driver
+from utils import Device
 from utils import get_logger
 
 
@@ -21,12 +22,14 @@ class BasePage:
 
     WAIT_TIME = 10
     
-    def __init__(self, browser: str, width: int, height: int) -> None:
+    def __init__(self,
+                 browser: str,
+                 device: Device) -> None:
         logger.info(
             f"Create a new browser instance: {browser}. "
-            f"Width: {width} Height: {height}"
+            f"Width: {device.width} Height: {device.height}"
         )
-        self.driver = Driver(browser, width, height)
+        self.driver = Driver(browser, device)
         self.action_chains = ActionChains(self.driver)
         self.driver_wait = WebDriverWait(self.driver, self.WAIT_TIME)
 
@@ -58,6 +61,19 @@ class BasePage:
             return element
         except TimeoutException:
             logger.error(f"Element not found: {location}")
+
+    def find_web_elements(self, location: tuple[str, str]) -> list:
+        logger.info(f"finding elements with location: {location}")
+        try:
+            elements = self.driver_wait.until(
+                expected_conditions.visibility_of_all_elements_located(
+                    location
+                )
+            )
+            logger.info(f"Elements found: {len(elements)}")
+            return elements
+        except TimeoutException:
+            logger.error(f"No elements found: {location}")
 
     def click_on_element(self, location: tuple[str, str]) -> WebElement:
         try:

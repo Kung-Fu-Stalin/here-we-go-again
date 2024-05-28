@@ -12,8 +12,7 @@ logger = get_logger(__name__)
 def close_browser():
     driver = Driver(
         browser=Config.BROWSER, 
-        width=Config.WIDTH, 
-        height=Config.HEIGHT
+        device=Config.DEVICE
     )
     yield
     logger.info(f"Closing {Config.BROWSER} browser window")

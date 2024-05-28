@@ -27,6 +27,7 @@ class HomePage(BasePage):
         By.CSS_SELECTOR, ".gbzdtz > div:nth-child(1)"
     FIRST_RESULT = \
         By.XPATH, '//*[@id="__next"]/div/main/div/div'
+    ALL_BUTTONS = By.CSS_SELECTOR, "button"
 
     def close_privacy_window(self) -> None:
         logger.info("Click on close button on privacy policy window")
@@ -50,9 +51,25 @@ class HomePage(BasePage):
             self.scroll_from_element(self.FIRST_RESULT, delta_x=0, delta_y=200)
             time.sleep(1)
 
+    def accept_content(self):
+        logger.info("Check content window...")
+        elements = self.find_web_elements(self.ALL_BUTTONS)
+        for element in elements:
+            if element.text == "Start Watching":
+                if element.is_displayed() and element.is_enabled():
+                    element.click()
+                    logger.info("Content accepted")
+                    break
+
+
     def select_random_channel(self):
-        channels = self.driver.execute_script(f"return document.querySelector(\"[role='list']\").childNodes;")
-        selectable_channels = [channel for channel in channels if channel.is_displayed()]
+        channels = self.driver.execute_script(
+            f"return document.querySelector(\"[role='list']\").childNodes;"
+        )
+        selectable_channels = [
+            channel for channel in channels if channel.is_displayed()
+        ]
         channel = random.choice(selectable_channels)
         channel.click()
+        self.accept_content()
         self.wait_until_video_start()
