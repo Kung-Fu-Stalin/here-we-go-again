@@ -1,3 +1,10 @@
+# Screenshots
+screenshots
+
+# IDEs 
+.code 
+.idea
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
