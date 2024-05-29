@@ -1,17 +1,17 @@
+import logging
+
 import pytest
 
-from utils import Driver
-from utils import Config
-from utils import get_logger
+from utils import Config, Driver
 
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def close_browser():
     driver = Driver(
-        browser=Config.BROWSER, 
+        browser=Config.BROWSER,
         device=Config.DEVICE
     )
     yield

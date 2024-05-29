@@ -1,5 +1,5 @@
 import time
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 from datetime import datetime
 
@@ -19,12 +19,9 @@ logger = get_logger(__name__)
 
 
 class BasePage:
-
     WAIT_TIME = 10
-    
-    def __init__(self,
-                 browser: str,
-                 device: Device) -> None:
+
+    def __init__(self, browser: str, device: Device) -> None:
         logger.info(
             f"Create a new browser instance: {browser}. "
             f"Width: {device.width} Height: {device.height}"
@@ -49,85 +46,78 @@ class BasePage:
         logger.info(f"Screenshot is available here: {screenshot_path}")
         return screenshot_path
 
-    def find_web_element(self, location: tuple[str, str]) -> WebElement:
+    def find_web_element(self, location: tuple[str, str]) -> Union[WebElement, None]:
         logger.info(f"Finding element with location: {location}")
         try:
             element = self.driver_wait.until(
-                expected_conditions.visibility_of_element_located(
-                    location
-                )
+                expected_conditions.visibility_of_element_located(location)
             )
             logger.info(f"Element found: {location}")
             return element
         except TimeoutException:
             logger.error(f"Element not found: {location}")
+        return None
 
-    def find_web_elements(self, location: tuple[str, str]) -> list:
-        logger.info(f"finding elements with location: {location}")
+    def find_web_elements(self, location: tuple[str, str]) -> Union[List[WebElement], None]:
+        logger.info(f"Finding elements with location: {location}")
         try:
             elements = self.driver_wait.until(
-                expected_conditions.visibility_of_all_elements_located(
-                    location
-                )
+                expected_conditions.visibility_of_all_elements_located(location)
             )
             logger.info(f"Elements found: {len(elements)}")
             return elements
         except TimeoutException:
             logger.error(f"No elements found: {location}")
+        return None
 
-    def click_on_element(self, location: tuple[str, str]) -> WebElement:
+    def click_on_element(self, location: tuple[str, str]) -> Union[WebElement, None]:
         try:
             element = self.driver_wait.until(
-                expected_conditions.visibility_of_element_located(
-                    location
-                )
+                expected_conditions.visibility_of_element_located(location)
             )
             if element:
                 element.click()
                 return element
         except TimeoutException:
             logger.error(f"Could not click the element: {location}")
+        return None
 
-    def enter_text(self, location: tuple[str, str], text: str) -> WebElement:
+    def enter_text(self, location: tuple[str, str], text: str) -> Union[WebElement, None]:
         try:
             element = self.driver_wait.until(
-                expected_conditions.visibility_of_element_located(
-                    location
-                )
+                expected_conditions.visibility_of_element_located(location)
             )
             if element:
                 element.send_keys(text)
                 return element
         except TimeoutException:
             logger.error(f"Could not enter text in the element: {location}")
+        return None
 
-    def scroll_from_element(self,
-                            location: tuple[str, str],
-                            delta_x: int,
-                            delta_y: int):
+    def scroll_from_element(self, location: tuple[str, str], delta_x: int, delta_y: int) -> None:
         element = self.find_web_element(location)
-        scroll_origin = ScrollOrigin.from_element(element)
-        self.action_chains.scroll_from_origin(
-            scroll_origin, delta_x, delta_y
-        ).perform()
+        if element:
+            scroll_origin = ScrollOrigin.from_element(element)
+            self.action_chains.scroll_from_origin(
+                scroll_origin, delta_x, delta_y
+            ).perform()
 
-    def wait_until_video_start(self):
+    def wait_until_video_start(self) -> None:
         js_script = """
             const video = document.querySelector('video');
             if (video) {
-                return video.currentTime && !video.paused && !video.ended
+                return video.currentTime && !video.paused && !video.ended;
             }
             return false;
-            """
+        """
         attempts = 5
         while attempts > 0:
             logger.info(f"Checking stream status. Attempt left: {attempts}")
             if self.driver.execute_script(js_script):
                 logger.info("Stream started.")
-                break
+                return
             attempts -= 1
             time.sleep(3)
-            return
         logger.error("Stream is not started after 5 attempts")
 
     @staticmethod
