@@ -6,14 +6,13 @@ import yaml
 
 
 @dataclass
-class Device: 
+class Device:
     name: str
     height: int
     width: int
 
 
 class Config:
-
     PROJECT_PATH = Path(__file__).resolve().parent.parent
     CONFIG_PATH = Path(PROJECT_PATH, "config", "config.yml")
     SCREENSHOTS_PATH = Path(PROJECT_PATH, "screenshots")
@@ -24,13 +23,13 @@ class Config:
         self._validate_attributes()
         self._set_device_attributes()
         self._set_config_attributes()
-    
+
     @staticmethod
     def read_data(config_path: Union[str, Path]) -> dict:
-        with open(config_path, "r") as file:
+        with open(config_path, "r", encoding="utf-8") as file:
             return yaml.safe_load(file)
-        
-    def _set_device_attributes(self) -> None: 
+
+    def _set_device_attributes(self) -> None:
         test_device = self.data["device"]
         for device in self.data["devices"]:
             if device.get(test_device):
@@ -53,7 +52,7 @@ class Config:
 
         t_browser = self.data.get("browser").lower()
         t_device = self.data.get("device").lower()
-    
+
         if t_browser not in browsers:
             raise ValueError(
                 f"Incorrect testing browser: {t_browser}. "
@@ -64,6 +63,5 @@ class Config:
                 f"Incorrect testing device: {t_device}. "
                 f"Correct devices: {devices}"
             )
-
 
 Config = Config()

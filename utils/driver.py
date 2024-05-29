@@ -1,7 +1,5 @@
 from selenium import webdriver
 
-from utils import Device
-
 
 class Driver:
 
@@ -26,18 +24,16 @@ class Driver:
     }
     _instances = {}
 
-    def __new__(cls, browser: str, device: Device):
+    def __new__(cls, browser: str, device):
         key = (browser, device.name)
-        if key not in cls._instances:   
+        if key not in cls._instances:
             instance = super(Driver, cls).__new__(cls)
-            instance._driver = cls.get_driver(
-                browser, device
-            )
+            instance._driver = cls.get_driver(browser, device)
             cls._instances[key] = instance._driver
         return cls._instances[key]
 
     @classmethod
-    def generate_user_agent(cls, device: Device):
+    def generate_user_agent(cls, device):
         if "iphone" in device.name.lower():
             headers = cls.iphone_headers_template
         else:
@@ -48,21 +44,13 @@ class Driver:
         }
 
     @classmethod
-    def get_driver(cls,
-                   browser: str,
-                   device: Device):
+    def get_driver(cls, browser: str, device):
         user_agent = cls.generate_user_agent(device)
         if browser == "chrome":
-            mobile_params = {
-                "deviceMetrics": {
-                    "width": int(device.width),
-                    "height": int(device.height)
-                }
-            }
-
             chrome_options = webdriver.ChromeOptions()
             # Problem on Ubuntu 24.04. Scroll with enabled mobile emulation doesn't work.
-            # Related StackOverflow thread: https://stackoverflow.com/questions/22722727/chrome-devtools-mobile-emulation-scroll-not-working
+            # Related StackOverflow thread:
+            # https://stackoverflow.com/questions/22722727/chrome-devtools-mobile-emulation-scroll-not-working
             # chrome_options.add_experimental_option("mobileEmulation", mobile_params)
             chrome_options.add_argument(f'--user-agent={user_agent}')
             chrome_options.add_argument(

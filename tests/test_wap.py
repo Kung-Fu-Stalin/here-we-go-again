@@ -1,12 +1,10 @@
-import time
-
 from utils import Config
 from pages import HomePage
 
 
 def test_wap():
     home_page = HomePage(
-        browser=Config.BROWSER, 
+        browser=Config.BROWSER,
         device=Config.DEVICE
     )
     home_page.open_page(url=Config.URL)
